@@ -1,0 +1,8 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.card { @apply rounded-2xl shadow p-5 bg-white; }
+.kpi  { @apply card flex flex-col gap-1; }
+.kpi .label { @apply text-sm text-gray-500; }
+.kpi .value { @apply text-2xl font-semibold; }

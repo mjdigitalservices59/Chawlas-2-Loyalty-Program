@@ -14,6 +14,31 @@ export default function AdminPage(){
   const [reds, setReds] = useState<Red[]>([]);
   const [msg, setMsg] = useState('');
 
+// --- auth bootstrap + early-return guard ---
+const [ready, setReady] = useState(false);
+
+useEffect(() => {
+  supabase.auth.getSession().then(({ data }) => {
+    setSession(data.session);
+    setReady(true);
+  });
+  const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => {
+    setSession(s);
+    setReady(true);
+  });
+  return () => sub.subscription.unsubscribe();
+}, []);
+
+// while we’re figuring out the session, render nothing (prevents flicker)
+if (!ready) return null;
+
+// not signed in? send to login (root) and stop rendering
+if (!session) {
+  if (typeof window !== 'undefined') window.location.href = '/';
+  return null;
+}
+// --- end guard ---
+
   useEffect(()=>{
     supabase.auth.getSession().then(({data})=>setSession(data.session));
     const sub = supabase.auth.onAuthStateChange((_e,s)=>setSession(s));

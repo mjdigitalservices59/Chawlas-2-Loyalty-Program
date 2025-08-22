@@ -17,6 +17,29 @@ export default function Page(){
   const [snap, setSnap] = useState<Snapshot|null>(null);
   const [msg, setMsg] = useState('');
 
+// --- auth bootstrap + early-return guard ---
+const [ready, setReady] = useState(false);
+
+useEffect(() => {
+  supabase.auth.getSession().then(({ data }) => {
+    setSession(data.session);
+    setReady(true);
+  });
+  const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => {
+    setSession(s);
+    setReady(true);
+  });
+  return () => sub.subscription.unsubscribe();
+}, []);
+
+if (!ready) return null;
+
+if (!session) {
+  if (typeof window !== 'undefined') window.location.href = '/';
+  return null;
+}
+// --- end guard ---
+
   useEffect(()=>{
     supabase.auth.getSession().then(({data})=>setSession(data.session));
     const { data: sub } = supabase.auth.onAuthStateChange((_e,s)=>setSession(s));

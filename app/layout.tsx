@@ -1,5 +1,5 @@
 import './globals.css';
-import TopBar from '@/components/TopBar';
+import TopBar from '../components/TopBar'; // <- relative path
 
 export const metadata = { title: 'Chawlas2 Loyalty' };
 
